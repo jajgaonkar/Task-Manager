@@ -4,16 +4,17 @@ export const API_BASE_URL = "https://task-manager-is03.onrender.com/api";
 
 const API = axios.create({
   baseURL: API_BASE_URL,
-  withCredentials: true // send refresh cookie [web:275][web:276]
+  withCredentials: true
 });
 
-// Simple in-memory access token (clears on refresh/tab close)
+// Separate client for refresh (no interceptors)
+const RefreshAPI = axios.create({
+  baseURL: API_BASE_URL,
+  withCredentials: true
+});
+
 let accessToken = null;
-
-export const setAccessToken = (t) => {
-  accessToken = t;
-};
-
+export const setAccessToken = (t) => { accessToken = t; };
 export const getAccessToken = () => accessToken;
 
 API.interceptors.request.use((config) => {
@@ -36,11 +37,13 @@ API.interceptors.response.use(
     const original = error.config;
     const status = error?.response?.status;
 
-    if (status !== 401 || original?._retry) {
+    // Don't try refresh on auth endpoints
+    const url = original?.url || "";
+    if (url.includes("/auth/login") || url.includes("/auth/register") || url.includes("/auth/refresh")) {
       return Promise.reject(error);
     }
 
-    // Avoid infinite loop
+    if (status !== 401 || original?._retry) return Promise.reject(error);
     original._retry = true;
 
     if (isRefreshing) {
@@ -58,7 +61,7 @@ API.interceptors.response.use(
     isRefreshing = true;
 
     try {
-      const r = await API.post("/auth/refresh");
+      const r = await RefreshAPI.post("/auth/refresh");
       const newToken = r.data.accessToken;
 
       setAccessToken(newToken);
@@ -70,12 +73,7 @@ API.interceptors.response.use(
       resolveQueue(refreshErr, null);
       setAccessToken(null);
 
-      // optional: hit logout to clear cookie
-      try {
-        await API.post("/auth/logout");
-      } catch {
-        // ignore
-      }
+      try { await RefreshAPI.post("/auth/logout"); } catch {}
 
       window.location.href = "/login";
       return Promise.reject(refreshErr);

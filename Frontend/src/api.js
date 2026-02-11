@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const API_BASE_URL = "/api";
+export const API_BASE_URL = "https://task-manager-is03.onrender.com/api";
 
 const API = axios.create({
   baseURL: API_BASE_URL,

@@ -7,20 +7,32 @@ const cors = require("cors");
 const authRoutes = require("./routes/authRoutes");
 const taskRoutes = require("./routes/taskRoutes");
 
-
 const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
 
-// If you use Vite proxy (recommended), set origin to true OR your dev origin.
-// Cookies + XHR require credentials config. [web:275][web:276]
-app.use(
-  cors({
-    origin: process.env.CLIENT_ORIGIN || true,
-    credentials: true
-  })
-);
+// CORS: allow both dev + prod origins (needed for Netlify -> Render)
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://jay-task-manager.netlify.app",
+  process.env.CLIENT_ORIGIN
+].filter(Boolean);
+
+const corsOptions = {
+  origin: (origin, cb) => {
+    // allow requests with no origin (Postman/curl)
+    if (!origin) return cb(null, true);
+
+    if (allowedOrigins.includes(origin)) return cb(null, true);
+
+    return cb(new Error("Not allowed by CORS"));
+  },
+  credentials: true
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 app.get("/api/health", (req, res) => res.json({ ok: true }));
 

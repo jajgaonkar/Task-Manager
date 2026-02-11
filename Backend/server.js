@@ -12,7 +12,7 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-// CORS: allow both dev + prod origins (needed for Netlify -> Render)
+// CORS (dev + prod)
 const allowedOrigins = [
   "http://localhost:5173",
   "https://jay-task-manager.netlify.app",
@@ -23,16 +23,16 @@ const corsOptions = {
   origin: (origin, cb) => {
     // allow requests with no origin (Postman/curl)
     if (!origin) return cb(null, true);
-
     if (allowedOrigins.includes(origin)) return cb(null, true);
-
     return cb(new Error("Not allowed by CORS"));
   },
   credentials: true
 };
 
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
+
+// Express v5 fix: DON'T use "*" here (it crashes); use a named wildcard instead
+app.options("/{*splat}", cors(corsOptions));
 
 app.get("/api/health", (req, res) => res.json({ ok: true }));
 

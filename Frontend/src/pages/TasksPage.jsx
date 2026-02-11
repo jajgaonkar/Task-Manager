@@ -482,7 +482,7 @@ const TasksPage = () => {
     <div className="h-[100dvh] w-full overflow-hidden bg-[#f6f7fb] text-slate-900">
       <div className="flex h-full">
         {/* Desktop sidebar (scrollable as requested) */}
-        <aside className="hidden md:block md:w-72 h-full shrink-0 overflow-y-auto overscroll-contain bg-slate-950 px-5 py-6 border-r border-white/10">
+        <aside className="hidden lg:block lg:w-72 h-full shrink-0 overflow-y-auto overscroll-contain bg-slate-950 px-5 py-6 border-r border-white/10">
           <div className="flex min-h-full flex-col">
             <div className="mb-7">
               <div className="flex items-center gap-2">
@@ -535,7 +535,7 @@ const TasksPage = () => {
           onScroll={() => {
             if (openDateKey) setOpenDateKey(null);
           }}
-          className="h-full flex-1 overflow-y-auto overscroll-contain px-3 py-5 sm:px-4 sm:py-6 md:px-8 md:py-8 pb-[calc(6rem+env(safe-area-inset-bottom))] md:pb-8"
+          className="h-full flex-1 overflow-y-auto overscroll-contain px-3 py-5 sm:px-4 sm:py-6 md:px-8 md:py-8 pb-[calc(6rem+env(safe-area-inset-bottom))] lg:pb-8"
         >
           <div className="mx-auto w-full max-w-6xl">
             {/* Header */}
@@ -696,7 +696,9 @@ const TasksPage = () => {
                                 />
                               ))}
                               {dayTasks.length > 3 && (
-                                <span className="text-[9px] sm:text-[10px] font-bold text-slate-400">+{dayTasks.length - 3}</span>
+                                <span className="text-[9px] sm:text-[10px] font-bold text-slate-400">
+                                  +{dayTasks.length - 3}
+                                </span>
                               )}
                             </div>
 
@@ -725,8 +727,6 @@ const TasksPage = () => {
                                       <span className="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-700">
                                         {dayTasks.length} task{dayTasks.length === 1 ? "" : "s"}
                                       </span>
-
-                                    
                                     </div>
                                   </div>
 
@@ -1006,7 +1006,7 @@ const TasksPage = () => {
       </div>
 
       {/* Mobile bottom navigation (always visible) */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden border-t border-slate-200 bg-white/95 backdrop-blur">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 lg:hidden border-t border-slate-200 bg-white/95 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-around px-3 py-2">
           <button
             onClick={() => setActiveView("dashboard")}
